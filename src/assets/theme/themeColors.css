@@ -1,0 +1,9 @@
+/*切换样式*/
+html[data-theme='dark'] {
+    --bg-color: #F53F3F;
+}
+
+/* 默认样式*/
+:root {
+    --bg-color: #14C9C9;
+}
