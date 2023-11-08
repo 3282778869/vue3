@@ -5,6 +5,7 @@ import { showMessage } from "./status"; // 引入状态码文件
 axios.defaults.timeout = 60000;
 axios.defaults.baseURL = "http://api.dev.dns.la" || "";  // 自定义接口地址
 
+// 请求接口需要令牌时
 const token = () => {
     if (sessionStorage.getItem("token")) {
         return sessionStorage.getItem("token");

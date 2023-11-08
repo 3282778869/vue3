@@ -10,15 +10,30 @@ export default defineConfig({
         vue(),
         // 自动导入ref
         AutoImport({
-            imports: ['vue'], dts: 'src/auto-import.d.ts'
+            include: [
+                /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+                /\.vue$/, /\.vue\?vue/, // .vue
+                /\.md$/, // .md
+            ],
+            imports: ['vue', 'vue-router', 'pinia'],
+            dts: 'src/auto-import.d.ts',
+            eslintrc: {
+                enabled: false,
+                filepath: './.eslintrc-auto-import.json',
+                globalsPropValue: true
+            },
         }),
         // 按需导入arco.design
         Components({
+            dirs: ['src/components'],
+            extensions: ['vue'],//文件扩展
             resolvers: [
                 ArcoResolver({
                     sideEffect: true
                 })
-            ]
+            ],
+            // 配置type文件生成位置
+            dts: 'src/components.d.ts'
         })
     ],
     resolve: {
