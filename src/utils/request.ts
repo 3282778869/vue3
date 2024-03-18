@@ -1,60 +1,72 @@
-import axios from "axios";
-import { showMessage } from "./status"; // 引入状态码文件
+import axios from 'axios'
+import { showMessage } from './status' // 引入状态码文件
+import { useConfigStore } from '@/stores/config'
+// import { errorMsg } from './message'
 
 // 设置接口超时时间
-axios.defaults.timeout = 60000;
-axios.defaults.baseURL = "http://api.dev.dns.la" || "";  // 自定义接口地址
+axios.defaults.timeout = 30000
+axios.defaults.baseURL = import.meta.env.VITE_APP_BASE_URL  // 自定义接口地址
 
-// 请求接口需要令牌时
-const token = () => {
-    if (sessionStorage.getItem("token")) {
-        return sessionStorage.getItem("token");
-    } else {
-        return sessionStorage.getItem("token");
-    }
-};
 
 //请求拦截
 axios.interceptors.request.use(
-    (config) => {
-        // 配置请求头
-        config.headers["Content-Type"] = "application/json;charset=UTF-8";
-        config.headers["token"] = token();
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+  (config) => {
+    config.headers['Content-Type'] = 'application/json;charset=UTF-8'
+    // 请求接口需要令牌时
+    const { token } = storeToRefs(useConfigStore())
+    config.headers['Authorization'] = 'Bearer ' + token.value
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
 
 // 响应拦截
 axios.interceptors.response.use(
-    (response) => {
-        return response;
-    },
-    (error) => {
-        const { response } = error;
-        if (response) {
-            // 请求已发出，但是不在2xx的范围
-            showMessage(response.status); // 传入响应码，匹配响应码对应信息
-            return Promise.reject(response.data);
-        } else {
-            // ElMessage.warning("网络连接异常,请稍后再试!");
-        }
+  (response) => {
+    return Promise.resolve(response.data);
+  },
+  (error) => {
+    const { response } = error
+    if (response) {
+      showMessage(response.status) // 传入响应码，匹配响应码对应信息
+      return Promise.reject(response.data);
+    } else {
+      // errorMsg('网络连接异常,请稍后再试!')
     }
-);
+  }
+)
 
 // 封装 请求并导出
-export function request(data: any) {
-    return new Promise((resolve, reject) => {
-        const promise = axios(data);
-        //处理返回
-        promise
-            .then((res: any) => {
-                resolve(res.data);
-            })
-            .catch((err: any) => {
-                reject(err.data);
-            });
-    });
+function request<T>(data: object): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const promise = axios(data)
+    //处理返回
+    promise
+      .then((res: any) => {
+        resolve(res)
+      })
+      .catch((err: any) => {
+        reject(err)
+      })
+  })
 }
+
+export function get<T>(url: string, params?: object): Promise<T> {
+  return request({ method: 'GET', url, params })
+}
+
+export function post<T>(url: string, data?: string): Promise<T> {
+  return request({ method: 'POST', url, data })
+}
+
+export function put<T>(url: string, data?: string): Promise<T> {
+  return request({ method: 'PUT', url, data })
+}
+
+export function del<T>(url: string, params?: object): Promise<T> {
+  return request({ method: 'DELETE', url, params })
+}
+

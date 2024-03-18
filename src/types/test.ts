@@ -9,5 +9,5 @@ export interface getGroupType {
 export interface getArticleType {
     pageIndex: number,
     pageSize:number,
-    group_id:string
+    groupId:string
 }
