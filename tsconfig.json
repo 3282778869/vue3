@@ -7,15 +7,5 @@
     {
       "path": "./tsconfig.app.json"
     }
-  ],
-  "CompilerOptions": {
-    //解析非相对模块的基础地址，默认是当前目录
-    "baseUrl": "./",
-    //路径映射，相对于baseUrl
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue","*.ts"],
-  "exclude": ["node_modules"]
+  ]
 }
